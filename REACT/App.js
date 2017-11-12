@@ -43,7 +43,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-    },
+    },inputBox: {
+        width: 100
+    }
 });
 
 export class Movie extends React.Component{
@@ -101,10 +103,10 @@ export class LoginComponent extends React.Component {
         return (
             <View style={styles.container}>
                 <Text>Email:</Text>
-                <TextInput onChangeText={(text) => this.setMail({text})} style={styles.input} />
+                <TextInput onChangeText={(text) => this.setMail({text})} style={styles.inputBox} />
 
                 <Text>Password:</Text>
-                <TextInput secureTextEntry={true} onChangeText={(text) => this.setPassword({text})} style={styles.input} />
+                <TextInput secureTextEntry={true} onChangeText={(text) => this.setPassword({text})} style={styles.inputBox} />
                 <Button onPress={() => this.loginButtonPressed()}
                         title="log in">
                     <Text style={styles.button}>Submit</Text>
