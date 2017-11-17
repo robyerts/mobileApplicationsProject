@@ -5,23 +5,25 @@ import { StackNavigator } from 'react-navigation';
 
 export class App extends React.Component {
     render() {
-
         var movie1 = new Movie('johny bravo','Shawshank Redemption');
         var movie2 = new Movie('silvester','godfather');
         var movie3 = new Movie('silvester','godfather 2');
         var movie4 = new Movie('silvester','godfather 3');
         var movies = [];
+
         movies.push(movie1);
         movies.push(movie2);
         movies.push(movie3);
         movies.push(movie4);
         var moviesToBeRendered = [];
-        const { navigate } = this.props.navigation;
+
+        const navigate  = this.props.navigation;
+
         for(let i = 0; i < movies.length; i++){
             moviesToBeRendered.push(
                 <View key = {i}>
                     <Button
-                        onPress={() => navigate('Movie', {director: 'lolo', title: 'kuhkuh'})} //to-do: pass parameters with valid values
+                        onPress={() => navigate('Movie', {director: 'lolo', title: 'kuhkuh'})} //to-do: pass parameters
                         title={movies[i].state.title + '  By:' + movies[i].state.director}
                         color="#841584"
                         accessibilityLabel="Learn more about this purple button"

@@ -38,7 +38,7 @@ public class DummyContent {
     }
 
     private static DummyItem createDummyItem(int position) {
-        return new DummyItem(String.valueOf(position), "Item " + position, makeDetails1(position), makeDetails2(position));
+        return new DummyItem(String.valueOf(position), "Movie " + position, makeDetails1(position), makeDetails2(position));
     }
 
     private static String makeDetails1(int position) {
@@ -48,10 +48,10 @@ public class DummyContent {
 //            builder.append("\nMore details information here.");
 //        }
 //        return builder.toString();
-        return "details1 of item: " + position;
+        return "details1 of movie: " + position;
     }
     private static String makeDetails2(int position) {
-        return "details2 of item: " + position;
+        return "details2 of movie: " + position;
     }
 
     /**
