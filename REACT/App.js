@@ -3,40 +3,38 @@ import { ActivityIndicator, TextInput, Alert, Button, TouchableOpacity, ListView
 import {email} from 'react-native-communications'
 import { StackNavigator } from 'react-navigation';
 
-export class App extends React.Component {
+export class MovieListComponent extends React.Component {
+    constructor(props){
+        super(props);
+    }
     render() {
-        var movie1 = new Movie('johny bravo','Shawshank Redemption');
-        var movie2 = new Movie('silvester','godfather');
-        var movie3 = new Movie('silvester','godfather 2');
-        var movie4 = new Movie('silvester','godfather 3');
-        var movies = [];
-
-        movies.push(movie1);
-        movies.push(movie2);
-        movies.push(movie3);
-        movies.push(movie4);
-        var moviesToBeRendered = [];
-
-        const navigate  = this.props.navigation;
-
+        var viewText = [];
+        var movies = this.props.navigation.state.params.movies;
+        const { navigate } = this.props.navigation;
         for(let i = 0; i < movies.length; i++){
-            moviesToBeRendered.push(
+
+            viewText.push(
                 <View key = {i}>
                     <Button
-                        onPress={() => navigate('Movie', {director: 'lolo', title: 'kuhkuh'})} //to-do: pass parameters
-                        title={movies[i].state.title + '  By:' + movies[i].state.director}
+                        onPress={() => this.props.navigation.navigate('MovieDetails', {movies: movies, index: i})}
+                        title={movies[i].title + ' By: ' + movies[i].director}
                         color="#841584"
                         accessibilityLabel="Learn more about this purple button"
                     />
                 </View>
-            )
+            );
         }
         return (
             <View>
-                { moviesToBeRendered }
+                { viewText }
             </View>
         )
     }
+
+    setMail(text){
+
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -50,48 +48,74 @@ const styles = StyleSheet.create({
     }
 });
 
-export class Movie extends React.Component{
-    state = {director: 'buggydirector', title:'buggytitle'};
+export class Movie{
+    director = '';
+    title = '';
+    constructor(title, director){
+        this.director = director;
+        this.title = title;
+    }
 
-    constructor(director, title){
-        super();
+    setTitle(title){
+        this.title = title;
+    }
+    setDirector(director){
+        this.director = director;
+    }
+}
 
-        this.state = {
-            director: director.toString(),
-            title: title.toString()};
-        if (typeof title !== 'string'){
-            this.state = {
-                director: 'bad input',
-                title: 'bad input'}
-        }
+export class MovieDetailsComponent extends React.Component{
+    state = new Movie('','');
+
+    constructor(props){
+        super(props);
+        const navigation = this.props.navigation;
     }
 
     render(){
+        var movies = this.props.navigation.state.params.movies;
+        var index = this.props.navigation.state.params.index;
+        state = movies[index];
         return (
             <View>
-                <Text>{this.state.title}</Text>
-                <Text>{this.state.director}</Text>
-                <Button
-                    onPress={() => this.props.navigation.navigate('App')}
-                    title="Go home"
-                />
+                <Text>{state.title}</Text>
+                <Text>Edit title:</Text>
+                <TextInput onChangeText={(text) => state.setTitle({text}.text)} editable={true} defaultValue={state.title}/>
+                <Text></Text>
+                <Text>{state.director}</Text>
+                <Text>Edit director:</Text>
+                <TextInput onChangeText={(text) => state.setDirector({text}.text)} editable={true} defaultValue={state.director}/>
+
+                {/*<Button*/}
+                    {/*onPress={() => this.props.navigation.navigate('MovieListComponent', {movies: movies})}*/}
+                    {/*title="Go home"*/}
+                {/*/>*/}
             </View>
         )
     }
 
 }
-export class LoginComponent extends React.Component {
+export class MainComponent extends React.Component {
+    movies = [];
     constructor(props) {
         super(props);
         this.state = {
             mail: "",
             password: ""
-        }
+        };
+        var movie1 = new Movie('Children of men','Alfonso Cuarón');
+        var movie2 = new Movie('Requiem for a Dream','Darren Aronofsky');
+        var movie3 = new Movie('The Fountain','Darren Aronofsky');
+        var movie4 = new Movie('In Time','Andrew Niccol');
+        this.movies.push(movie1);
+        this.movies.push(movie2);
+        this.movies.push(movie3);
+        this.movies.push(movie4);
     }
 
     loginButtonPressed(){
         Alert.alert("sending email..");
-        email(['this.state.email'], null, null, "react-native mail test", "loged in at: " + new Date().toDateString());
+        email([this.state.mail], null, null, "react-native mail test", "Captured password: " + this.state.password.toString()  + "\n logged in at: " + new Date().toISOString());
     }
     setMail(text){
         this.state.mail = text;
@@ -105,18 +129,18 @@ export class LoginComponent extends React.Component {
         return (
             <View style={styles.container}>
                 <Text>Email:</Text>
-                <TextInput onChangeText={(text) => this.setMail({text})} style={styles.inputBox} />
+                <TextInput style={styles.inputBox} onChangeText={(text) => this.setMail({text})}/>
 
                 <Text>Password:</Text>
-                <TextInput secureTextEntry={true} onChangeText={(text) => this.setPassword({text})} style={styles.inputBox} />
+                <TextInput secureTextEntry={true} style={styles.inputBox} onChangeText={(text) => this.setPassword({text})}  />
                 <Button onPress={() => this.loginButtonPressed()}
                         title="log in">
-                    <Text style={styles.button}>Submit</Text>
+                    <Text>Submit</Text>
                 </Button>
                 <Text></Text>
-                <Button onPress={() => navigate('App')}
-                        title="Go to app">
-                    <Text style={styles.button}>Submit</Text>
+                <Button onPress={() => navigate('MovieList', {movies: this.movies})}
+                        title="list of movies">
+                    <Text>Submit</Text>
                 </Button>
 
             </View>
@@ -124,14 +148,14 @@ export class LoginComponent extends React.Component {
     }
 }
 const RootNavigator = StackNavigator({
-    Login: {
-        screen: LoginComponent,
-    },
-    Movie: {
-        screen: Movie,
-    },
     App: {
-        screen: App,
+        screen: MainComponent,
+    },
+    MovieDetails: {
+        screen: MovieDetailsComponent,
+    },
+    MovieList: {
+        screen: MovieListComponent,
     }
 
 });
