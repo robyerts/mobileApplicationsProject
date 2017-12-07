@@ -12,7 +12,7 @@ import com.example.robert.myapplicationlogin2.model.MovieItem;
  * Created by robert on 07.12.2017.
  */
 
-@Database(entities = { MovieItem.class }, version = 2)
+@Database(entities = { MovieItem.class }, version = 3)
 public abstract class MovieDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "movieDatabase.db";

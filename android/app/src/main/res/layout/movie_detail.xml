@@ -36,6 +36,17 @@
         tools:context="com.example.robert.myapplicationlogin2.MovieDetailFragment"
     android:inputType="text"/>
 
+    <TextView
+        android:id="@+id/ratingTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rating : " />
+
+    <NumberPicker
+        android:id="@+id/numberPickerRating"
+        android:layout_width="108dp"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/buttonSaveMovieItem"
         android:layout_width="wrap_content"

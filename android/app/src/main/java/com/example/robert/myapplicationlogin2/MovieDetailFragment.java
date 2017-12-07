@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 
 import com.example.robert.myapplicationlogin2.database.MovieDatabase;
 import com.example.robert.myapplicationlogin2.dummy.DummyContent;
@@ -58,8 +59,6 @@ public class MovieDetailFragment extends Fragment {
             // Load the dummy title specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load title from a title provider.
-
-            System.out.println(getArguments().getLong(ARG_ITEM_ID));
 
             Callable<MovieItem> getMovieTask = new Callable<MovieItem>() {
                 @Override
@@ -164,6 +163,19 @@ public class MovieDetailFragment extends Fragment {
                     mItem.details2 = s.toString();
                 }
             });
+
+            NumberPicker np = (NumberPicker) rootView.findViewById(R.id.numberPickerRating);
+            np.setMaxValue(10);
+            np.setMinValue(1);
+            np.setValue(mItem.rating);
+
+            np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                @Override
+                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                    mItem.rating = newVal;
+                }
+            });
+
         }
 
         return rootView;

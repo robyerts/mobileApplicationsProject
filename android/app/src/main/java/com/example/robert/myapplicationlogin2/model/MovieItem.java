@@ -16,18 +16,21 @@ public class MovieItem {
     public final String title;
     public String details1;
     public String details2;
+    public int rating;
 
     @Ignore
-    public MovieItem(long id, String title, String details1, String details2) {
+    public MovieItem(long id, String title, String details1, String details2, int rating) {
         this.id = id;
         this.title = title;
         this.details1 = details1;
         this.details2 = details2;
+        this.rating = rating;
     }
-    public MovieItem(String title, String details1, String details2) {
+    public MovieItem(String title, String details1, String details2, int rating) {
         this.title = title;
         this.details1 = details1;
         this.details2 = details2;
+        this.rating = rating;
     }
 
     @Override

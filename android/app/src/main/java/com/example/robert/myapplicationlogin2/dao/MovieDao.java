@@ -32,4 +32,7 @@ public interface MovieDao {
     @Query("SELECT * FROM MovieItem WHERE id=:id")
     public MovieItem getMovieById(long id);
 
+    @Query("SELECT * FROM MovieItem WHERE rating=:id")
+    public List<MovieItem> getMoviesByRating(int rating);
+
 }

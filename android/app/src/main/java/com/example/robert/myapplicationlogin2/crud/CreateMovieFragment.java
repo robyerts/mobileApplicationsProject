@@ -30,6 +30,7 @@ public class CreateMovieFragment extends Fragment {
     EditText titleEditText;
     EditText details1EditText;
     EditText details2EditText;
+    NumberPicker np;
     public CreateMovieFragment() {
     }
 
@@ -37,7 +38,7 @@ public class CreateMovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_movie, container, false);
-        NumberPicker np = (NumberPicker) rootView.findViewById(R.id.numberPicker);
+        np = (NumberPicker) rootView.findViewById(R.id.numberPicker);
         np.setMinValue(1);
         np.setMaxValue(10);
         np.setWrapSelectorWheel(true);
@@ -52,7 +53,7 @@ public class CreateMovieFragment extends Fragment {
                 String title = titleEditText.getText().toString();
                 String details1 = details1EditText.getText().toString();
                 String details2 = details2EditText.getText().toString();
-                MovieItem movie = new MovieItem(title, details1, details2);
+                MovieItem movie = new MovieItem(title, details1, details2, np.getValue());
                 MovieDatabase.getInstance(getContext()).getMovieDao().insertMovie(movie);
             }
         };
