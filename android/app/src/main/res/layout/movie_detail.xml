@@ -1,27 +1,51 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <TextView
+        android:id="@+id/textViewDetailsSection1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DetailsSection1" />
+
+    <EditText
         android:id="@+id/movie_detail1"
         style="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:padding="16dp"
         android:textIsSelectable="true"
-        tools:context="com.example.robert.myapplicationlogin2.MovieDetailFragment"
-        android:inputType="text"/>
+        tools:context="com.example.robert.myapplicationlogin2.MovieDetailFragment" />
+
+    <TextView
+        android:id="@+id/textViewDetailsSection2"
+        android:layout_width="145dp"
+        android:layout_height="wrap_content"
+        android:text="DetailsSection2" />
 
     <EditText xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/movie_detail2"
         style="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:textIsSelectable="true"
         tools:context="com.example.robert.myapplicationlogin2.MovieDetailFragment"
     android:inputType="text"/>
+
+    <Button
+        android:id="@+id/buttonSaveMovieItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save" />
+
+    <Button
+        android:id="@+id/buttonDeleteMovieItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="delete" />
 
 </LinearLayout>
