@@ -47,6 +47,11 @@
         android:layout_width="108dp"
         android:layout_height="wrap_content" />
 
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChartRatings"
+        android:layout_width="218dp"
+        android:layout_height="243dp" />
+
     <Button
         android:id="@+id/buttonSaveMovieItem"
         android:layout_width="wrap_content"
@@ -58,5 +63,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="delete" />
+
 
 </LinearLayout>

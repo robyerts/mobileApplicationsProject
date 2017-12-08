@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.example.robert.myapplicationlogin2.crud.CreateMovie;
 import com.example.robert.myapplicationlogin2.database.MovieDatabase;
-import com.example.robert.myapplicationlogin2.dummy.DummyContent;
 import com.example.robert.myapplicationlogin2.model.MovieItem;
 import com.example.robert.myapplicationlogin2.utils.ExecutorSingleton;
 
