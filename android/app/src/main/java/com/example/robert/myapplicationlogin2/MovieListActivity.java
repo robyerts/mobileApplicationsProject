@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +17,22 @@ import android.widget.TextView;
 
 import com.example.robert.myapplicationlogin2.crud.CreateMovie;
 import com.example.robert.myapplicationlogin2.database.MovieDatabase;
+import com.example.robert.myapplicationlogin2.model.Movie;
 import com.example.robert.myapplicationlogin2.model.MovieItem;
 import com.example.robert.myapplicationlogin2.utils.ExecutorSingleton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An activity representing a list of Movies. This activity
@@ -43,6 +50,8 @@ public class MovieListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     private ExecutorService executor = ExecutorSingleton.executor;
+    private DatabaseReference moviesDBreference;
+    private ValueEventListener vel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,37 +84,42 @@ public class MovieListActivity extends AppCompatActivity {
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-//        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
-        Callable<List<MovieItem>> task = new Callable<List<MovieItem>>() {
+    private void setupRecyclerView(@NonNull final RecyclerView recyclerView) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+        moviesDBreference = myRef.child("movies");
+
+        vel = new ValueEventListener() {
             @Override
-            public List<MovieItem> call() throws Exception {
-//                MovieDatabase.getInstance(MovieListActivity.this).getMovieDao().insertMovie(new MovieItem("movie 3", "details1", "details2"));
-//                TO-DO: remove manual inserting of movies
-//                for(int i = 26; i < 27; i++){
-//                    MovieDatabase.getInstance(MovieListActivity.this).getMovieDao().insertMovie(DummyContent.createDummyItem(i));
-//                }
-//                System.out.println(MovieDatabase.getInstance(MovieListActivity.this).getMovieDao().loadAllMovies());
-                return MovieDatabase.getInstance(MovieListActivity.this).getMovieDao().loadAllMovies();
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    List<Movie> movies = new ArrayList<>();
+                    for(DataSnapshot movieEntry: dataSnapshot.getChildren()){
+//                        Log.d("movie key : ", movieEntry.getKey());
+                        Movie m = movieEntry.getValue(Movie.class);
+                        movies.add(m);
+                        Log.d("fetched movie: ", m.toString());
+                    }
+                    recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(movies));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         };
-        Future<List<MovieItem>> future = executor.submit(task);
-        try {
-            List<MovieItem> movies = future.get();
-            recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(movies));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        Query query =  moviesDBreference.orderByChild("id");
+        query.addValueEventListener(vel);
+
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<MovieItem> mValues;
+        private final List<Movie> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<MovieItem> items) {
+        public SimpleItemRecyclerViewAdapter(List<Movie> items) {
             mValues = items;
         }
 
@@ -137,7 +151,7 @@ public class MovieListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, MovieDetailActivity.class);
                         intent.putExtra(MovieDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
+//                        moviesDBreference.removeEventListener(vel);
                         context.startActivity(intent);
                     }
                 }
@@ -153,7 +167,7 @@ public class MovieListActivity extends AppCompatActivity {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
-            public MovieItem mItem;
+            public Movie mItem;
 
             public ViewHolder(View view) {
                 super(view);

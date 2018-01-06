@@ -3,11 +3,11 @@ package com.example.robert.myapplicationlogin2;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -32,6 +32,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.robert.myapplicationlogin2.model.Movie;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -98,6 +105,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 attemptLogin();
             }
         });
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+        DatabaseReference moviesDBreference = myRef.child("movies");
+
+        Movie m1 = new Movie(1, "alah", "alahDetail1", "alahDetail2", 5);
+        moviesDBreference.child(m1.id + "").setValue(m1);
+        Movie m2 = new Movie(2, "mezel", "mezelDetail1", "mezelDetail2", 10);
+        moviesDBreference.child(m2.id + "").setValue(m2);
+        Movie m3 = new Movie(3, "alibaba", "alibabaDetail1", "alibabaDetail2", 7);
+        moviesDBreference.child(m3.id + "").setValue(m3);
+        Movie m4 = new Movie(4, "alunel", "alunelDetail1", "alunelDetail2", 2);
+        moviesDBreference.child(m4.id + "").setValue(m4);
 
         Button mainListActivityButton = (Button) findViewById(R.id.movies_list);
         mainListActivityButton.setOnClickListener(new OnClickListener() {

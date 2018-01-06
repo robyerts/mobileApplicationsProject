@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,19 @@ import android.widget.NumberPicker;
 import com.example.robert.myapplicationlogin2.MovieListActivity;
 import com.example.robert.myapplicationlogin2.R;
 import com.example.robert.myapplicationlogin2.database.MovieDatabase;
+import com.example.robert.myapplicationlogin2.model.Movie;
 import com.example.robert.myapplicationlogin2.model.MovieItem;
 import com.example.robert.myapplicationlogin2.utils.ExecutorSingleton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
 
@@ -31,6 +42,7 @@ public class CreateMovieFragment extends Fragment {
     EditText details1EditText;
     EditText details2EditText;
     NumberPicker np;
+
     public CreateMovieFragment() {
     }
 
@@ -47,16 +59,44 @@ public class CreateMovieFragment extends Fragment {
         details1EditText = (EditText) rootView.findViewById(R.id.movieDetails1EditText);
         details2EditText = (EditText) rootView.findViewById(R.id.movieDetails2EditText);
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+        final DatabaseReference moviesDBreference = myRef.child("movies");
+
         final Runnable createMovieTask = new Runnable() {
             @Override
             public void run() {
-                String title = titleEditText.getText().toString();
-                String details1 = details1EditText.getText().toString();
-                String details2 = details2EditText.getText().toString();
-                MovieItem movie = new MovieItem(title, details1, details2, np.getValue());
-                MovieDatabase.getInstance(getContext()).getMovieDao().insertMovie(movie);
+                final String title = titleEditText.getText().toString();
+                final String details1 = details1EditText.getText().toString();
+                final String details2 = details2EditText.getText().toString();
+
+                ValueEventListener vel = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            List<Movie> movies = new ArrayList<>();
+                            for(DataSnapshot movieEntry: dataSnapshot.getChildren()){
+                                Movie m = movieEntry.getValue(Movie.class);
+                                movies.add(m);
+                                Log.d("fetched movie CreateF: ", m.toString());
+                            }
+                            long id = movies.get(movies.size() - 1).getId() + 1;
+                            Movie movie = new Movie(id, title, details1, details2, np.getValue());
+                            moviesDBreference.child(String.valueOf(id)).setValue(movie);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                };
+
+                Query query =  moviesDBreference.orderByChild("id");
+                query.addListenerForSingleValueEvent(vel);
             }
         };
+
         Button createMovieBotton = (Button) rootView.findViewById(R.id.createMovieButton);
         createMovieBotton.setOnClickListener(new View.OnClickListener() {
             @Override
