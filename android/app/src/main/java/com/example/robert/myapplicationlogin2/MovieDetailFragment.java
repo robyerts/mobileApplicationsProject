@@ -1,6 +1,7 @@
 package com.example.robert.myapplicationlogin2;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,8 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -200,16 +203,27 @@ public class MovieDetailFragment extends Fragment {
                                 .setSmallIcon(R.drawable.ic_notification_alert)
                                 .setContentTitle("Movie deleted")
                                 .setContentText("id: " + mItem.id);
-                int mNotificationId = 001;
+                int mNotificationId = 002;
                 mNotifyMgr.notify(mNotificationId, mBuilder.build());
             }
         };
+
+        final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
         Button saveMovieButton = rootView.findViewById(R.id.buttonSaveMovieItem);
         saveMovieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                executor.submit(updateMovieTask);
+                FirebaseUser user = mAuth.getCurrentUser();
+                if(user == null){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Permission denied")
+                            .setTitle("Error");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    executor.submit(updateMovieTask);
+                }
             }
         });
 
@@ -217,10 +231,18 @@ public class MovieDetailFragment extends Fragment {
         deleteMovieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                executor.submit(deleteMovieTask);
-                Intent intent=new Intent(getContext(),MovieListActivity.class);
-
-                startActivity(intent);
+                FirebaseUser user = mAuth.getCurrentUser();
+                if(user == null){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Permission denied")
+                            .setTitle("Error");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    executor.submit(deleteMovieTask);
+                    Intent intent=new Intent(getContext(),MovieListActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 

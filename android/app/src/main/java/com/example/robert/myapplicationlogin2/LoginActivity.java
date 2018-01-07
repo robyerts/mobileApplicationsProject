@@ -34,6 +34,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robert.myapplicationlogin2.model.Movie;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 import static android.Manifest.permission.READ_CONTACTS;
 import static com.example.robert.myapplicationlogin2.R.id.login;
@@ -97,6 +103,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
         });
+
+        FirebaseAuth.getInstance().signOut();
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -193,6 +201,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
+
 //         actual login !!
         boolean cancel = false;
         View focusView = null;
@@ -224,36 +233,63 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // perform the user login attempt.
             showProgress(true);
 
-            mAuthTask = new UserLoginTask(email, password);
-            final AsyncTask<Void, Void, Boolean> execute = mAuthTask.execute((Void) null);
-            try {
-                boolean loginResult = execute.get();
-                if(loginResult == true){
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    Date date = new Date();
-                    System.out.println(dateFormat.format(date));
+            final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                    Intent i = new Intent(Intent.ACTION_SENDTO);
-                    i.setType("text/plain");
-                    i.putExtra(Intent.EXTRA_SUBJECT, "Android test email");
-                    i.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
-                    i.putExtra(Intent.EXTRA_TEXT, "new login date:  " + dateFormat.format(date));
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("sign-in", "signInWithEmail:success");
 
-                    i.setData(Uri.parse("mailto:"));
-                    try {
-                        startActivity(Intent.createChooser(i, "Send mail..."));
-                    } catch (android.content.ActivityNotFoundException ex) {
-                        Toast.makeText(LoginActivity.this, "There are no email directors installed.", Toast.LENGTH_SHORT).show();
-                    }
+                                //the next extracted instance is not directly used
+                                FirebaseUser user = mAuth.getCurrentUser();
 
+                                Intent intent=new Intent(LoginActivity.this,MovieListActivity.class);
+                                startActivity(intent);
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w("sign=in", "signInWithEmail:failure", task.getException());
+                                mEmailView.setError("Combination of email and password is incorrect");
+                                mEmailView.requestFocus();
+                            }
+                            showProgress(false);
+
+                        }
+                    });
+
+
+//            mAuthTask = new UserLoginTask(email, password);
+//            final AsyncTask<Void, Void, Boolean> execute = mAuthTask.execute((Void) null);
+//            try {
+//                boolean loginResult = execute.get();
+//                if(loginResult == true){
+////                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+////                    Date date = new Date();
+////                    System.out.println(dateFormat.format(date));
+////
+////                    Intent i = new Intent(Intent.ACTION_SENDTO);
+////                    i.setType("text/plain");
+////                    i.putExtra(Intent.EXTRA_SUBJECT, "Android test email");
+////                    i.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
+////                    i.putExtra(Intent.EXTRA_TEXT, "new login date:  " + dateFormat.format(date));
+////
+////                    i.setData(Uri.parse("mailto:"));
+////                    try {
+////                        startActivity(Intent.createChooser(i, "Send mail..."));
+////                    } catch (android.content.ActivityNotFoundException ex) {
+////                        Toast.makeText(LoginActivity.this, "There are no email directors installed.", Toast.LENGTH_SHORT).show();
+////                    }
+//
 //                    Intent intent=new Intent(LoginActivity.this,MovieListActivity.class);
 //                    startActivity(intent);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+//                }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            }
         }
 
     }
@@ -376,6 +412,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
+//            DUMMY authentification
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
@@ -403,8 +440,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (success) {
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                mEmailView.setError("Combination of email and password is incorrect");
+                mEmailView.requestFocus();
             }
         }
 
