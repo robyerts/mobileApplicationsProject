@@ -106,6 +106,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         FirebaseAuth.getInstance().signOut();
 
+        Button sendFeedbackButton = (Button) findViewById(R.id.sendFeedbackButton);
+        sendFeedbackButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView feedBackTextView = (TextView) findViewById(R.id.feedback_textbox);
+
+                Intent i = new Intent(Intent.ACTION_SENDTO);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "feedback");
+                i.putExtra(Intent.EXTRA_EMAIL, new String[]{"consumer.feedback.fake@gmail.com"});
+                i.putExtra(Intent.EXTRA_TEXT, feedBackTextView.getText());
+
+                i.setData(Uri.parse("mailto:"));
+                try {
+                    startActivity(Intent.createChooser(i, "Send mail..."));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(LoginActivity.this, "There are no email directors installed.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
