@@ -6,14 +6,15 @@ import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import { connect } from 'react-redux';
 
 class AddMovieScreen extends Component{
-
-	genre = 'Genre';
+	genre = 'DummyGenre';
 	constructor(props){
 		super(props);
 		const {navigation} = this.props.navigation;
 	}
+	/*
+		When we want to add a movie we send an addAction and then  navigate back to the home page
+	*/
 	addMovie(movie){
-		console.log(movie);
 		this.props.addAction(movie);
 		this.props.navigation.navigate('Home');
 	}
@@ -21,16 +22,16 @@ class AddMovieScreen extends Component{
 
 	}
 	render(){
-		var movie = new MovieModel('dummyTitle','dummyDirector');
+		var movie = new MovieModel('DummyTitle','DummyDirector');
 		console.log(this.props.navigation.state.params);
 		return (
 			<View>
 
-			<Text>Movie title:</Text>
+			<Text>Title of the movie:</Text>
 			<TextInput onChangeText={(text) => movie.title = {text}.text} style={styles.input} editable={true}/>
 
 			<Text></Text>
-			<Text>Movie Details:</Text>
+			<Text>Edit director:</Text>
 			<TextInput onChangeText={(text) => movie.director = {text}.text} style={styles.input} editable={true}/>
 			<Picker
 				selectedValue={this.genre}
@@ -55,7 +56,7 @@ class AddMovieScreen extends Component{
 				ref={(popupDialog) => { this.popupDialog = popupDialog; }}
 			>
 				<View>
-				<Text>If left blank, it will add a movie with the name "dummyTitle" and the director "dummyDirector"</Text>
+				<Text>If left blank, it will add a movie with the title DummyTitle and the director DummyDirector</Text>
 				</View>
 			</PopupDialog>
 			</View>
@@ -66,7 +67,7 @@ class AddMovieScreen extends Component{
 var styles = StyleSheet.create({
     container: {
       flex:1,
-      alignItems:'center',
+      alignItems: 'center',
       justifyContent:'center',
       backgroundColor: 'slategrey'
     },
@@ -78,20 +79,17 @@ var styles = StyleSheet.create({
     activeTitle: {
       color: 'red',
     },
-    dialog: {
-        marginTop:200
-    },
   });
   const mapState = (state = {}) => {
       return {...state};
   };
-
+  
   const mapDispatch = (dispatch) => {
       return {
           addAction:(movie) => {
               dispatch(addAction(movie))
-          },
+          }, 
       }
   };
-
+  
 export default connect(mapState, mapDispatch)(AddMovieScreen)

@@ -18,6 +18,8 @@ import com.example.robert.myapplicationlogin2.database.MovieDatabase;
 import com.example.robert.myapplicationlogin2.model.Movie;
 import com.example.robert.myapplicationlogin2.model.MovieItem;
 import com.example.robert.myapplicationlogin2.utils.ExecutorSingleton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -97,18 +99,29 @@ public class CreateMovieFragment extends Fragment {
             }
         };
 
+        final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
         Button createMovieBotton = (Button) rootView.findViewById(R.id.createMovieButton);
         createMovieBotton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                executor.submit(createMovieTask);
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("redirecting to the movie list")
-                        .setTitle("success");
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                Intent intent=new Intent(getContext(),MovieListActivity.class);
-                startActivity(intent);
+                FirebaseUser user = mAuth.getCurrentUser();
+                if(user == null){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Permission denied")
+                            .setTitle("Error");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    executor.submit(createMovieTask);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("redirecting to the movie list")
+                            .setTitle("success");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    Intent intent=new Intent(getContext(),MovieListActivity.class);
+                    startActivity(intent);
+                }
             }
         });
         return rootView;
